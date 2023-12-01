@@ -7,7 +7,7 @@ import { useState, useEffect } from 'react';
 import { collection, getDocs, query, where, getDoc, doc, updateDoc, } from 'firebase/firestore';
 import EditTask from '@/components/EditTask'; // Импортируйте новый компонент
 
-const Tasks = ({ tasks, completed, onEditClick, onMarkAsCompletedClick }) => {
+const Tasks = ({ tasks, completed, onEditClick, onMarkAsCompletedClick, onUnmarkAsCompletedClick }) => {
   if (tasks.length === 0) {
     return (
       <div className='flex flex-col gap-[12px]'>
@@ -41,8 +41,16 @@ const Tasks = ({ tasks, completed, onEditClick, onMarkAsCompletedClick }) => {
             {!task.isCompleted && (
               <button
                 onClick={() => onMarkAsCompletedClick(task.id)}
-                className='bg-green-500 text-white p-[8px] rounded-[8px] mt-[8px]'>
-                Выполнено
+                className='bg-green-500 text-white p-[8px] rounded-[8px] mt-[8px] ml-[10px]'>
+                Завершить
+              </button>
+            )}
+            {/* Добавляем кнопку "Отменить выполнение" */}
+            {task.isCompleted && (
+              <button
+                onClick={() => onUnmarkAsCompletedClick(task.id)}
+                className='bg-red-500 text-white p-[8px] rounded-[8px] mt-[8px] ml-[10px]'>
+                Отменить завершение
               </button>
             )}
           </div>
@@ -83,6 +91,26 @@ const Todos = () => {
         // Обновляем локальное состояние задач
         setTasks((prevTasks) =>
           prevTasks.map((task) => (task.id === taskId ? { ...task, isCompleted: true } : task))
+        );
+      }
+    } catch (error) {
+      console.error('Ошибка при обновлении статуса задачи:', error);
+    }
+  };
+
+  const handleUnmarkAsCompleted = async (taskId) => {
+    try {
+      const taskRef = doc(db, 'todos', taskId);
+      const taskSnapshot = await getDoc(taskRef);
+
+      if (taskSnapshot.exists()) {
+        await updateDoc(taskRef, {
+          isCompleted: false, // Устанавливаем задачу как невыполненную
+        });
+
+        // Обновляем локальное состояние задач
+        setTasks((prevTasks) =>
+          prevTasks.map((task) => (task.id === taskId ? { ...task, isCompleted: false } : task))
         );
       }
     } catch (error) {
@@ -170,23 +198,22 @@ const Todos = () => {
                     name={tasks.find((task) => task.id === editingTaskId)?.name}
                     description={tasks.find((task) => task.id === editingTaskId)?.description}
                     onUpdate={handleUpdate}
+                    onCancel={handleEditCancel}
                   />
                 )}
-                <button onClick={handleEditCancel} className='bg-red-500 text-white p-[12px] rounded-[12px] mt-[8px]'>
-                  Отменить редактирование
-                </button>
+                {/* Добавляем возможность снять отметку "Выполнено" */}
                 <Tasks
                   tasks={tasks.filter((task) => task.isCompleted)}
                   completed={true}
                   onEditClick={handleEditClick}
                   onMarkAsCompletedClick={handleMarkAsCompleted}
+                  onUnmarkAsCompletedClick={handleUnmarkAsCompleted}
                 />
               </div>
             ) : (
               <p>Нет задач для отображения</p>
             )}
           </div>
-
         </div>
       ) : (
         <p>Вы не вошли в систему</p>

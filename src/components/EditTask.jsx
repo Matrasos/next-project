@@ -5,7 +5,7 @@ import { useState } from 'react';
 import { doc, updateDoc } from 'firebase/firestore';
 import { db } from '@/config/firebase';
 
-const EditTask = ({ taskId, name, description, onUpdate }) => {
+const EditTask = ({ taskId, name, description, onUpdate, onCancel }) => {
   const [newName, setNewName] = useState(name);
   const [newDescription, setNewDescription] = useState(description);
 
@@ -43,6 +43,11 @@ const EditTask = ({ taskId, name, description, onUpdate }) => {
         onClick={handleUpdate}
         className='bg-blue-500 text-white p-[12px] rounded-[12px] mt-[8px]'>
         Сохранить изменения
+      </button>
+      <button
+        onClick={onCancel} // Добавляем обработчик для отмены изменений
+        className='bg-red-500 text-white p-[12px] rounded-[12px] mt-[8px]'>
+        Отменить изменения
       </button>
     </div>
   );
