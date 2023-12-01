@@ -31,7 +31,11 @@ const Navbar = () => {
       <Link href="/">Logo</Link>
       <div className="flex gap-[8px]">
         {isRegistered
-          ? (<><Link href="/addTask">Добавить задачу</Link> <button className="text-red-400" onClick={logout}>Выйти</button></>)
+          ? (<>
+            <Link href="/addTask">Добавить задачу</Link>
+            <Link href="/tasks">Задачи</Link>
+            <button className="text-red-400" onClick={logout}>Выйти</button>
+          </>)
           : <Link href="/auth">Войти</Link>
         }
       </div>

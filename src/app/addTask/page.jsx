@@ -5,7 +5,7 @@ import { auth, db } from '@/config/firebase';
 import { useState, useEffect } from 'react';
 import { collection, addDoc } from 'firebase/firestore';
 
-export default function Todos() {
+export default function addTodo() {
   const [taskName, setTaskName] = useState('');
   const [taskDescription, setTaskDescription] = useState('');
   const [user, setUser] = useState(null);
@@ -52,29 +52,36 @@ export default function Todos() {
   }, []);
 
   return (
-    <div className='border border-solid border-t-black p-[12px]'>
-      <h2 className='text-[32px] font-semibold'>Добавить задачу</h2>
-      <div className='mt-[20px]'>
-        <input
-          type='text'
-          value={taskName}
-          onChange={(e) => setTaskName(e.target.value)}
-          placeholder='Введите название задачи'
-          className='w-full border border-solid border-black-400 p-[8px] rounded-[12px]'
-        />
-        <input
-          type='text'
-          value={taskDescription}
-          onChange={(e) => setTaskDescription(e.target.value)}
-          placeholder='Введите описание задачи'
-          className='w-full border border-solid border-black-400 p-[8px] rounded-[12px] mt-[8px]'
-        />
-        <button
-          onClick={addTask}
-          className='w-full bg-blue-500 text-white p-[12px] rounded-[12px] mt-[8px]'>
-          Добавить задачу
-        </button>
-      </div>
+
+    <div>
+      {user ? (
+        <div className='border border-solid border-t-black p-[12px]'>
+          <h2 className='text-[32px] font-semibold'>Добавить задачу</h2>
+          <div className='mt-[20px]'>
+            <input
+              type='text'
+              value={taskName}
+              onChange={(e) => setTaskName(e.target.value)}
+              placeholder='Введите название задачи'
+              className='w-full border border-solid border-black-400 p-[8px] rounded-[12px]'
+            />
+            <input
+              type='text'
+              value={taskDescription}
+              onChange={(e) => setTaskDescription(e.target.value)}
+              placeholder='Введите описание задачи'
+              className='w-full border border-solid border-black-400 p-[8px] rounded-[12px] mt-[8px]'
+            />
+            <button
+              onClick={addTask}
+              className='w-full bg-blue-500 text-white p-[12px] rounded-[12px] mt-[8px]'>
+              Добавить задачу
+            </button>
+          </div>
+        </div>
+      ) : (
+        <p>Вы не вошли в систему</p>
+      )}
     </div>
   );
 }
