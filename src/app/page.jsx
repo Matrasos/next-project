@@ -25,8 +25,8 @@ export default function Home() {
           <h2 className='text-green-500 text-[32px] font-semibold'>Вы вошли в систему</h2>
           <div className='mt-[20px]'>
             <p>
-              <span className='font-medium inline-block mr-[12px]'>Email:</span>
-              {user.email}
+              <span className='font-medium inline-block mr-[12px]'>Логин:</span>
+              {user.email || user.phoneNumber}
             </p>
             <p>
               <span className='font-medium inline-block mr-[12px]'>UID:</span>

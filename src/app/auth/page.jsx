@@ -2,8 +2,10 @@
 
 import { auth, googleProvider } from '../../config/firebase'
 import { useRouter } from 'next/navigation';
-import { createUserWithEmailAndPassword, signInWithPopup, onAuthStateChanged, signInWithEmailAndPassword } from 'firebase/auth'
+import { createUserWithEmailAndPassword, signInWithPopup, onAuthStateChanged, signInWithEmailAndPassword, RecaptchaVerifier, signInWithPhoneNumber } from 'firebase/auth'
 import { useEffect, useState } from 'react'
+import PhoneInput from 'react-phone-input-2';
+import 'react-phone-input-2/lib/style.css'
 
 const Auth = () => {
   const router = useRouter();
@@ -11,6 +13,9 @@ const Auth = () => {
   const [password, setPassword] = useState("")
   const [isRegistered, setIsRegistered] = useState(false);
   const [passwordError, setPasswordError] = useState("");
+  const [phone, setPhone] = useState("")
+  const [user, setUser] = useState(null)
+  const [code, setCode] = useState("")
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (user) => {
@@ -58,11 +63,28 @@ const Auth = () => {
     }
   };
 
-
-
   const signInWithGoogle = async () => {
     try {
       await signInWithPopup(auth, googleProvider)
+    } catch (error) {
+      console.error(error)
+    }
+  }
+
+  const sendCode = async () => {
+
+    try {
+      const recaptcha = new RecaptchaVerifier(auth, "recaptcha", {})
+      const confirmation = await signInWithPhoneNumber(auth, phone, recaptcha);
+      setUser(confirmation)
+    } catch (error) {
+      console.error(error)
+    }
+  }
+
+  const verifyCode = async () => {
+    try {
+      await user.confirm(code)
     } catch (error) {
       console.error(error)
     }
@@ -105,6 +127,18 @@ const Auth = () => {
         className='mt-[100px] bg-cyan-300 text-black p-[12px] rounded-[12px]'>
         Авторизоваться с помощью Google
       </button>
+      <div className='w-full flex gap-[20px] items-center'>
+        <PhoneInput
+          className='h-[100%] flex-[20%]'
+          country={'kz'}
+          value={phone}
+          onChange={(phone) => { setPhone("+" + phone) }}
+        />
+        <button onClick={sendCode} className='w-full flex-auto text-center bg-purple-500 text-white rounded-[12px] py-[8px]'>Отправить код</button>
+        <div id='recaptcha'></div>
+        <input onChange={(e) => { setCode(e.target.value) }} className='border border-solid border-black-400 p-[8px] rounded-[12px]' type='text' placeholder='Код' />
+        <button onClick={verifyCode} className='w-full flex-auto text-center bg-purple-500 text-white rounded-[12px] py-[8px]'>Подтвердить</button>
+      </div>
     </div>
   );
 }
