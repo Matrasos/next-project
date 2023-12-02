@@ -1,6 +1,5 @@
 'use client'
 
-// Todos.jsx
 import { onAuthStateChanged } from 'firebase/auth';
 import { auth, db } from '@/config/firebase';
 import { useState, useEffect } from 'react';
